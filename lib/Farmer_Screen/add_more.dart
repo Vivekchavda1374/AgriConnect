@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -195,63 +196,80 @@ class _AddMoreScreenState extends State<AddMoreScreen> {
       });
     }
   }
+Future<void> _saveCrop() async {
+  if (_formKey.currentState?.validate() ?? false) {
+    String? encryptedImage;
 
-  Future<void> _saveCrop() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      String? encryptedImage;
-
-      // Encrypt the image data if available
-      if (_imageData != null) {
-        try {
-          final encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey));
-          final iv = encrypt.IV.fromLength(16); // Random IV for encryption
-          final encrypted = encrypter.encryptBytes(_imageData!, iv: iv);
-
-          encryptedImage = base64Encode(encrypted.bytes);
-        } catch (e) {
-          _showSnackBar('Image encryption failed: $e');
-          return;
-        }
-      }
-
-      // Prepare crop data
-      final cropData = {
-        'cropName': _cropNameController.text,
-        'category': _selectedCategory,
-        'quantity': _quantityController.text,
-        'price': _priceController.text,
-        'harvestDate': _harvestDate?.toIso8601String(),
-        'cropDescription': _cropDescriptionController.text,
-        'encryptedImage': encryptedImage ?? '',
-        'timestamp': FieldValue.serverTimestamp(),
-      };
-
-      // Replace this with the current farmer's ID
-      const farmerId =
-          "SvEArqH9fSnsbgPwFVcr"; 
-
+    // Encrypt the image data if available
+    if (_imageData != null) {
       try {
-        // Add crop to the farmer's `crops` subcollection
-        await FirebaseFirestore.instance
-            .collection('farmer')
-            .doc(farmerId)
-            .collection('crops')
-            .add(cropData);
+        final encrypter = encrypt.Encrypter(encrypt.AES(_encryptionKey));
+        final iv = encrypt.IV.fromLength(16); // Random IV for encryption
+        final encrypted = encrypter.encryptBytes(_imageData!, iv: iv);
 
-        _showSnackBar('Crop added successfully!');
-
-        // Reset the form after successful submission
-        _formKey.currentState?.reset();
-        setState(() {
-          _harvestDate = null;
-          _selectedCategory = null;
-          _imageData = null;
-        });
+        encryptedImage = base64Encode(encrypted.bytes);
       } catch (e) {
-        _showSnackBar('Error saving crop: $e');
+        _showSnackBar('Image encryption failed: $e');
+        return;
       }
     }
+
+    // Prepare crop data
+    final cropData = {
+      'cropName': _cropNameController.text,
+      'category': _selectedCategory,
+      'quantity': _quantityController.text,
+      'price': _priceController.text,
+      'harvestDate': _harvestDate?.toIso8601String(),
+      'cropDescription': _cropDescriptionController.text,
+      'encryptedImage': encryptedImage ?? '',
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    // Replace this with the current farmer's ID
+    const farmerId = "SvEArqH9fSnsbgPwFVcr";
+
+    try {
+      // Add crop to the farmer's `crops` subcollection
+      await FirebaseFirestore.instance
+          .collection('farmer')
+          .doc(farmerId)
+          .collection('crops')
+          .add(cropData);
+
+      _showSnackBar('Crop added successfully!');
+
+      // Trigger a push notification
+      await _sendNotification('New Crop Added', 'Your crop has been successfully added to the mandi.');
+
+      // Reset the form after successful submission
+      _formKey.currentState?.reset();
+      setState(() {
+        _harvestDate = null;
+        _selectedCategory = null;
+        _imageData = null;
+      });
+    } catch (e) {
+      _showSnackBar('Error saving crop: $e');
+    }
   }
+}
+
+Future<void> _sendNotification(String title, String body) async {
+  final messaging = FirebaseMessaging.instance;
+
+  try {
+    await FirebaseFirestore.instance.collection('notifications').add({
+      'title': title,
+      'body': body,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    print('Notification sent: $title - $body');
+  } catch (e) {
+    print('Error sending notification: $e');
+  }
+}
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context)

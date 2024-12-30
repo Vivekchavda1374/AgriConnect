@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -8,9 +9,15 @@ import 'Farmer_Screen/home_screen.dart';
 import 'Farmer_Screen/add_more.dart';
 import 'Farmer_Screen/farmer_desboard.dart';
 import 'screens/welcome_screen.dart';
+
+ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Handle background messages
+  print('Handling a background message: ${message.messageId}');
+}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+ 
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Initialize Firebase with platform-specific options
   try {

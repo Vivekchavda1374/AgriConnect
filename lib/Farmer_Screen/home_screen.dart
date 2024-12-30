@@ -1,3 +1,4 @@
+import 'package:agri_connect/Farmer_Screen/notifiaction_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -178,9 +179,14 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Welcome to Your Farm App'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications),
-              onPressed: () {},
-            ),
+  icon: const Icon(Icons.notifications),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NotificationScreen()),
+    );
+  },
+)
           ],
         ),
         body: SingleChildScrollView(
