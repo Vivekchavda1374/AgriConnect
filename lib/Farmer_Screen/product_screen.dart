@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'add_more.dart'; // Import your AddMoreScreen
 
 class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({Key? key}) : super(key: key);
+  const ProductListScreen({super.key});
 
   @override
   State<ProductListScreen> createState() => _FarmerProductListScreenState();
@@ -86,7 +86,7 @@ class _FarmerProductListScreenState extends State<ProductListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Crops', style: const TextStyle(fontSize: 22)),
+        title: const Text('Your Crops', style: TextStyle(fontSize: 22)),
         actions: [
           IconButton(
             onPressed: () {
@@ -120,7 +120,7 @@ class _FarmerProductListScreenState extends State<ProductListScreen> {
                       value: category,
                       child: Text(category, style: const TextStyle(fontSize: 18)),
                     );
-                  }).toList(),
+                  }),
                 ],
                 onChanged: _filterByCategory,
               ),

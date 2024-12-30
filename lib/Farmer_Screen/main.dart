@@ -21,7 +21,7 @@ void main() async {
 }
 
 class MyFarmer extends StatelessWidget {
-  MyFarmer({super.key});
+  const MyFarmer({super.key});
 
   @override
   Widget build(BuildContext context) {

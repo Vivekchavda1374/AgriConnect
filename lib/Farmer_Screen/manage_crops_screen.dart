@@ -49,13 +49,13 @@ class _ManageCropsScreenState extends State<ManageCropsScreen> {
           .doc(cropId)
           .delete();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Crop deleted successfully'),
       ));
       setState(() {}); // Refresh the list after deletion
     } catch (e) {
       print('Error deleting crop: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Error deleting crop'),
       ));
     }
@@ -201,7 +201,7 @@ class _AddUpdateCropScreenState extends State<AddUpdateCropScreen> {
               .collection('crops')
               .add(cropData);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Crop added successfully')),
+            const SnackBar(content: Text('Crop added successfully')),
           );
         } else {
           // Update existing crop
@@ -212,7 +212,7 @@ class _AddUpdateCropScreenState extends State<AddUpdateCropScreen> {
               .doc(widget.crop!['id'])
               .update(cropData);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Crop updated successfully')),
+            const SnackBar(content: Text('Crop updated successfully')),
           );
         }
 
@@ -220,7 +220,7 @@ class _AddUpdateCropScreenState extends State<AddUpdateCropScreen> {
       } catch (e) {
         print('Error saving crop: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving crop')),
+          const SnackBar(content: Text('Error saving crop')),
         );
       }
     }

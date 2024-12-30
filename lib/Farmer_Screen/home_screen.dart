@@ -24,8 +24,9 @@ class _HomePageState extends State<HomePage> {
   Weather? _weather;
   String? _errorMessage;
 
-  List<String> yourProducts = [];
-  List<String> sellerProducts = [];
+  List<Map<String, dynamic>> yourProducts = [];
+  List<Map<String, dynamic>> sellerProducts = [];
+  List<Map<String, dynamic>> sellerMachineProducts = [];
 
   final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
 
@@ -34,28 +35,98 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _fetchWeather();
     _fetchCrops();
+    _fetchSellerCrops();
+    _fetchSellerMachine();
   }
 
   Future<void> _fetchCrops() async {
     try {
       final cropsSnapshot = await FirebaseFirestore.instance
           .collection('farmer')
-          .doc("SvEArqH9fSnsbgPwFVcr") // Replace with your dynamic farmerId
+          .doc("SvEArqH9fSnsbgPwFVcr")
           .collection('crops')
           .get();
 
-      List<String> fetchedCrops = cropsSnapshot.docs.map((doc) {
-        return doc['cropName'] as String ?? 'Unknown Crop';
+      List<Map<String, dynamic>> fetchedCrops = cropsSnapshot.docs.map((doc) {
+        return {
+          'cropName': doc['cropName'] ?? 'Unknown Crop',
+          'encryptedImage': doc['encryptedImage'] ?? '',
+          'price': doc['price'] ?? '0',
+          'cropDescription': doc['cropDescription'] ?? '0',
+          'category': doc['category'] ?? '0',
+          'quantity': doc['quantity'] ?? '0',
+          'timestamp': doc['timestamp'] ?? '',
+          'harvestDate': doc['harvestDate'] ?? '',
+        };
       }).toList();
 
       setState(() {
         yourProducts = fetchedCrops;
-        sellerProducts = fetchedCrops; // Optionally, you can use different data for seller products
       });
     } catch (e) {
-      print('Error fetching crops: $e');
       setState(() {
-        yourProducts = []; // Ensure the list is empty if fetch fails
+        yourProducts = [];
+      });
+    }
+  }
+
+  Future<void> _fetchSellerCrops() async {
+    try {
+      final sellerCropsSnapshot = await FirebaseFirestore.instance
+          .collection('seller')
+          .doc('DEj50uZRGx13YxYf5wT4')
+          .collection('seeds')
+          .get();
+
+      List<Map<String, dynamic>> fetchedSellerCrops = sellerCropsSnapshot.docs.map((doc) {
+        return {
+          'encryptedImage': doc['encryptedImage'] ?? '',
+          'seedName': doc['seedName'] ?? 'Unknown Seed',
+          'price': doc['price'] ?? '0',
+          'quantity': doc['quantity'] ?? '0',
+          'location': doc['location'] ?? 'Unknown Location',
+          'isNegotiable': doc['isNegotiable'] ?? false,
+          'timestamp': doc['timestamp'] ?? '',
+        };
+      }).toList();
+
+      setState(() {
+        sellerProducts = fetchedSellerCrops;
+      });
+    } catch (e) {
+      setState(() {
+        sellerProducts = [];
+      });
+    }
+  }
+
+  Future<void> _fetchSellerMachine() async {
+    try {
+      final sellerMachinesSnapshot = await FirebaseFirestore.instance
+          .collection('seller')
+          .doc('qwZiJSWOagNHJDRmXVhe')
+          .collection('machines')
+          .get();
+
+      List<Map<String, dynamic>> fetchedSellerMachines = sellerMachinesSnapshot.docs.map((doc) {
+        return {
+          'encryptedImage': doc['encryptedImage'] ?? '',
+          'machineName': doc['machineName'] ?? 'Unknown Machine',
+          'price': doc['price'] ?? '0',
+          'maintenanceDetails': doc['maintenanceDetails'] ?? '0',
+          'usageHistory': doc['usageHistory'] ?? '0',
+          'isRental': doc['isRental'] ?? false,
+          'isNegotiable': doc['isNegotiable'] ?? false,
+          'timestamp': doc['timestamp'] ?? '',
+        };
+      }).toList();
+
+      setState(() {
+        sellerMachineProducts = fetchedSellerMachines;
+      });
+    } catch (e) {
+      setState(() {
+        sellerMachineProducts = [];
       });
     }
   }
@@ -99,13 +170,6 @@ class _HomePageState extends State<HomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _addProduct(String product) {
-    setState(() {
-      yourProducts.add(product);
-      sellerProducts.add(product);
-    });
-  }
-
   List<Widget> _buildScreens() {
     return [
       Scaffold(
@@ -129,20 +193,19 @@ class _HomePageState extends State<HomePage> {
               _sectionTitle('Your Products'),
               _buildYourProductsCarousel(),
               const SizedBox(height: 20),
-              _sectionTitle('Events'),
-              _buildCard('Events', 'Upcoming events...'),
-              const SizedBox(height: 20),
               _sectionTitle('Seller Products'),
               _buildSellerCarousel(),
+              const SizedBox(height: 20),
+              _sectionTitle('Seller Machines'),
+              _buildSellerMachineCarousel(),
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            // Replaced GoRouter navigation with Navigator.push
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddMoreScreen()),
+              MaterialPageRoute(builder: (context) => const AddMoreScreen()),
             );
           },
           backgroundColor: Colors.green[800],
@@ -150,7 +213,7 @@ class _HomePageState extends State<HomePage> {
           label: const Text('Sell Crop'),
         ),
       ),
-      Scaffold(
+      const Scaffold(
         body: ProductListScreen(),
       ),
       Scaffold(
@@ -342,50 +405,57 @@ class _HomePageState extends State<HomePage> {
 
     return CarouselSlider(
       options: CarouselOptions(
-        height: 180.0, // Different height for the first carousel
+        height: 200.0,
         autoPlay: true,
         enlargeCenterPage: true,
         aspectRatio: 16 / 9,
-        viewportFraction: 0.7, // Different viewportFraction for the first carousel
+        viewportFraction: 0.9,
       ),
       items: yourProducts.map((product) {
         return Builder(
           builder: (BuildContext context) {
             return Card(
-              color: Colors.green[100],
+              color: Colors.green[50],
               elevation: 5,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Text(
-                    product,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[800],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Show product name or fallback to "Unknown"
+                    Text(
+                      product['cropName'] ?? 'Unknown Crop',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
+                      ),
                     ),
-                  ),
+
+                    // Show price or fallback to "Price not available"
+                    Text(
+                      "Price: ${product['price'] ?? 'Price not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+
+                    // Show quantity or fallback to "Quantity not available"
+                    Text(
+                      "Quantity: ${product['quantity'] ?? 'Quantity not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+
+                    // Show harvest date or fallback to "Date not available"
+                    Text(
+                      "Harvest Date: ${product['harvestDate'] ?? 'Date not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                  ],
                 ),
               ),
             );
           },
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildCard(String title, String subtitle) {
-    return Card(
-      color: Colors.green[50],
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListTile(
-          title: Text(title),
-          subtitle: Text(subtitle),
-        ),
-      ),
     );
   }
 
@@ -401,29 +471,95 @@ class _HomePageState extends State<HomePage> {
 
     return CarouselSlider(
       options: CarouselOptions(
-        height: 200.0, // Different height for the second carousel
-        autoPlay: false, // No auto-play for the seller products carousel
+        height: 200.0,
+        autoPlay: true,
         enlargeCenterPage: true,
         aspectRatio: 16 / 9,
-        viewportFraction: 0.7, // Different viewportFraction for the second carousel
+        viewportFraction: 0.8,
       ),
       items: sellerProducts.map((product) {
         return Builder(
           builder: (BuildContext context) {
             return Card(
-              color: Colors.green[100],
+              color: Colors.green[50],
               elevation: 5,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Text(
-                    product,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[800],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product['seedName'] ?? 'Unknown Seed',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
+                      ),
                     ),
-                  ),
+                    Text(
+                      "Price: ${product['price'] ?? 'Price not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                    Text(
+                      "Location: ${product['location'] ?? 'Location not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildSellerMachineCarousel() {
+    if (sellerMachineProducts.isEmpty) {
+      return Center(
+        child: Text(
+          'No seller machines available',
+          style: TextStyle(color: Colors.green[800], fontSize: 16),
+        ),
+      );
+    }
+
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200.0,
+        autoPlay: true,
+        enlargeCenterPage: true,
+        aspectRatio: 16 / 9,
+        viewportFraction: 0.8,
+      ),
+      items: sellerMachineProducts.map((product) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Card(
+              color: Colors.green[50],
+              elevation: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product['machineName'] ?? 'Unknown Machine',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
+                      ),
+                    ),
+                    Text(
+                      "Price: ${product['price'] ?? 'Price not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                    Text(
+                      "Maintenance: ${product['maintenanceDetails'] ?? 'Details not available'}",
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                  ],
                 ),
               ),
             );
