@@ -17,7 +17,7 @@ void main() async {
     debugPrint('Firebase initialization failed: $e');
   }
 
-  runApp(MyFarmer());
+  runApp(const MyFarmer());
 }
 
 class MyFarmer extends StatelessWidget {

@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/login/login screen/login_screen.dart';
 import 'screens/login/sign_up screen/sign_up_screen.dart';
-import 'screens/splashScreen/splash_screen.dart';  // Import SplashScreen
+import 'screens/splashScreen/splash_screen.dart';  
 import 'Farmer_Screen/home_screen.dart';
 import 'Farmer_Screen/add_more.dart';
 import 'Farmer_Screen/farmer_desboard.dart';
@@ -11,10 +11,12 @@ import 'screens/welcome_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+
   // Initialize Firebase with platform-specific options
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
+      
     );
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');

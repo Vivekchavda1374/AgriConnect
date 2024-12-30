@@ -15,7 +15,7 @@ class VerifyEmailScreen extends StatelessWidget {
       // If email is verified, navigate to the home screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyFarmer ()), // Navigate to HomeScreen
+        MaterialPageRoute(builder: (context) => const MyFarmer ()), // Navigate to HomeScreen
       );
     } else {
       // Show a message if the email is not yet verified

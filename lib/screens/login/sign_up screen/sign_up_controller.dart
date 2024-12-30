@@ -30,7 +30,7 @@ class SignUpController {
       // Navigate directly to FarmerDashboard
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } catch (error) {
       // Show error message
