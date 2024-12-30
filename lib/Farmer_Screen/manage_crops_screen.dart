@@ -61,10 +61,8 @@ class _ManageCropsScreenState extends State<ManageCropsScreen> {
     }
   }
 
-  // Function to navigate to Add/Update Crop screen
   void _navigateToAddUpdateCrop(BuildContext context, {Map<String, dynamic>? crop}) {
-    // Implement your navigation logic to Add/Update Crop screen.
-    // Pass the crop data to pre-fill the form if editing.
+
     Navigator.push(
       context,
       MaterialPageRoute(

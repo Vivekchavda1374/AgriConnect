@@ -1,8 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../otp screens/otp_screen.dart';
+import '../otp screens/otp_screen.dart'; // Import OTP screen
 
 class ForgetPasswordMailScreen extends StatelessWidget {
   const ForgetPasswordMailScreen({super.key});
@@ -54,14 +51,23 @@ class ForgetPasswordMailScreen extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            Get.to(() => const FarmerOTPScreen());
+                            // Using Navigator.push() to navigate to OTP screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const FarmerOTPScreen(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade800,
                           ),
-                          child: const Text('Next',style: TextStyle(
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                          )),
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                            ),
+                          ),
                         ),
                       ),
                     ],

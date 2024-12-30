@@ -276,3 +276,4 @@ Future<void> _sendNotification(String title, String body) async {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 }
+

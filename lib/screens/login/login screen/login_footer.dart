@@ -1,16 +1,45 @@
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import '../sign_up screen/sign_up_screen.dart';
 
 class LoginFooterWidget extends StatelessWidget {
-  const LoginFooterWidget({super.key});
+  LoginFooterWidget({Key? key}) : super(key: key);
 
-  void _googleSignIn() {
-    // Simulate a Google sign-in action.
-    // Replace this function with your actual Google sign-in logic.
-    print("Redirecting to Google sign-in...");
+  // Initialize GoogleSignIn
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  // Function to handle Google sign-in
+  Future<void> _googleSignInAction() async {
+    try {
+      // Attempt to sign in with Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User cancelled the sign-in
+        print('Google Sign-In cancelled');
+        return;
+      }
+
+      // Obtain the authentication details
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // If using Firebase for authentication, authenticate with Firebase
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase using the Google credentials
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      // Successfully signed in, you can now proceed with your app's logic
+      print('Google Sign-In successful, user: ${user?.displayName}');
+    } catch (e) {
+      print('Error during Google Sign-In: $e');
+    }
   }
 
   @override
@@ -29,11 +58,11 @@ class LoginFooterWidget extends StatelessWidget {
           width: double.infinity,
           child: OutlinedButton.icon(
             icon: const Icon(
-              Icons.account_circle, // Placeholder icon (replace with Google icon if needed)
+              Icons.account_circle, // Placeholder icon (can replace with Google icon)
               color: Colors.brown,
             ),
             label: const Text('Sign in with Google'),
-            onPressed: _googleSignIn, // Calls the Google sign-in function
+            onPressed: _googleSignInAction, // Calls the Google sign-in function
           ),
         ),
         const SizedBox(height: 16),
@@ -45,7 +74,7 @@ class LoginFooterWidget extends StatelessWidget {
             print("Navigating to sign-up page...");
           },
           child: Text.rich(
-          TextSpan(
+            TextSpan(
               text: 'Don’t have an account? ',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Colors.brown,

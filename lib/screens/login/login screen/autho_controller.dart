@@ -30,11 +30,9 @@ class AuthController {
     }
   }
 
-  // Optional: Log out the user
   Future<void> logout() async {
     await _auth.signOut();
 
-    // Clear shared preferences when logging out
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('email');
     await prefs.remove('password');

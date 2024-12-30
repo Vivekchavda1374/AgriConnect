@@ -16,6 +16,7 @@ import 'screens/welcome_screen.dart';
 }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
  
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 

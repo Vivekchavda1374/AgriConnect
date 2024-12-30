@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'footer_sheet_button.dart';
 import 'forget_password_mail.dart';
+import 'footer_sheet_button.dart';
 
 class ForgetPasswordScreen {
   static Future<dynamic> buildShowModalBottomSheet(BuildContext context) {
@@ -30,8 +28,18 @@ class ForgetPasswordScreen {
             const SizedBox(height: 30.0),
             ForgetPasswordBtnWidget(
               onTap: () {
-                Navigator.pop(context);
-                Get.to(() => const ForgetPasswordMailScreen());
+                Navigator.pop(context); // Close the modal first
+                // Delay navigation to ensure modal is closed before navigation
+                Future.delayed(Duration(milliseconds: 300), () {
+                  if (context != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgetPasswordMailScreen(),
+                      ),
+                    );
+                  }
+                });
               },
               title: 'Email',
               subTitle: 'Reset via Email',
@@ -39,7 +47,10 @@ class ForgetPasswordScreen {
             ),
             const SizedBox(height: 20.0),
             ForgetPasswordBtnWidget(
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context); // Close the modal first
+                // You can add phone reset logic here
+              },
               title: 'Phone Number',
               subTitle: 'Reset via Phone',
               btnIcon: Icons.mobile_friendly_rounded,

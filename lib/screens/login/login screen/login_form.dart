@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../Farmer_Screen/home_screen.dart';
+import '../forget password/footer_sheet_button.dart';
+import '../forget password/forget_pass_footer.dart';
 import 'autho_controller.dart';
 import 'package:flutter/gestures.dart';
 
@@ -123,19 +125,17 @@ class _LoginFormState extends State<LoginForm> {
 
             // Forgot Password Button
             Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Navigate to the forgot password screen
-                  // ForgetPasswordScreen.buildShowModalBottomSheet(context);
-                },
-                child: const Text(
-                  'Forgot Password?',
-                  style: TextStyle(color: Colors.green),
-                ),
-              ),
-            ),
-
+  alignment: Alignment.centerRight,
+  child: TextButton(
+    onPressed: () {
+       ForgetPasswordScreen.buildShowModalBottomSheet(context);
+    },
+    child: const Text(
+      'Forgot Password?',
+      style: TextStyle(color: Colors.green),
+    ),
+  ),
+),
             const SizedBox(height: 16.0),
 
             // Login Button

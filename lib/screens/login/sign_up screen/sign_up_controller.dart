@@ -2,7 +2,6 @@ import 'package:agri_connect/Farmer_Screen/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../Farmer_Screen/farmer_desboard.dart';
 
 
 class SignUpController {

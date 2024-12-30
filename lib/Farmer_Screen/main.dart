@@ -1,8 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'add_more.dart';
-import 'home_screen.dart';
-import 'farmer_desboard.dart'; // Import your dashboard if needed
+import 'home_screen.dart'; // Import your dashboard if needed
 import '../firebase_options.dart'; // Import firebase_options.dart for platform-specific initialization
 
 void main() async {
